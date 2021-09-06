@@ -87,7 +87,7 @@ public class Application {
 
 	public static void initApp() {
 
-		File  dbFile = new File("database.txt");
+		File  dbFile = new File("lockme-user.txt");
 		File  lockerFile = new File("locker-file.txt");
 		
 		try {
