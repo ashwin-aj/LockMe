@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class Login {
 
-    public static void loginUser(Scanner keyboard, Scanner input,UserCredentials userCredentials, PrintWriter lockerOutput) {
+    public static void loginUser(Scanner keyboard, Scanner input,UserCredentials userCredentials) {
         System.out.println("==========================================");
         System.out.println("*										 *");
         System.out.println("*   WELCOME TO LOGIN PAGE	 			 *");
@@ -27,7 +27,7 @@ public class Login {
                     System.out.println("* Login Successful ! 200OK     *");
                     System.out.println("================================");
                     found = true;
-                    Authentication.lockerOptions(inpUsername,keyboard,userCredentials,lockerOutput);
+                    Authentication.lockerOptions(inpUsername,keyboard,userCredentials);
                     break;
                 }
             }

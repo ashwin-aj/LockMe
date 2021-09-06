@@ -3,50 +3,55 @@ package com.simplilearn.lockme.authentication;
 import com.simplilearn.lockme.application.Application;
 import com.simplilearn.lockme.model.UserCredentials;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Scanner;
 
 public class Authentication {
 
-    public static void lockerOptions(String inpUsername, Scanner keyboard,UserCredentials userCredentials, PrintWriter lockerOutput) {
+    private static PrintWriter lockerOutput;
+
+    public static void lockerOptions(String inpUsername, Scanner keyboard,UserCredentials userCredentials) {
         System.out.println("=================================");
         System.out.println("1 . FETCH ALL STORED CREDENTIALS ");
         System.out.println("2 . STORED CREDENTIALS ");
-        System.out.println("3 . LOGOUT ");
+        System.out.println("3 . REMOVE CREDENTIALS ");
+        System.out.println("4 . LOGOUT ");
         System.out.println("=================================");
+        createLockerforUser(inpUsername);
         int option = keyboard.nextInt();
         switch(option) {
             case 1 :
-                fetchCredentials(inpUsername,keyboard,userCredentials,lockerOutput);
+                fetchCredentials(inpUsername,keyboard,userCredentials);
                 break;
             case 2 :
-                storeCredentials(inpUsername,keyboard,userCredentials,lockerOutput);
+                storeCredentials(inpUsername,keyboard,userCredentials);
                 break;
             case 3 :
+                removeCredentials(inpUsername,keyboard,userCredentials);
+                break;
+            case 4 :
                 logout();
                 break;
             default :
-                System.out.println("Please select 1,2 Or 3");
-                lockerOptions(inpUsername,keyboard,userCredentials,lockerOutput);
+                System.out.println("Please select 1,2,3 Or 4");
+                lockerOptions(inpUsername,keyboard,userCredentials);
                 break;
         }
         Application.getLockerInput().close();
     }
 
-    private static void logout() {
-        System.out.println("==========================================");
-        System.out.println("*										 *");
-        System.out.println("*  User Logout Successfully!	 		 *");
-        System.out.println("*										 *");
-        System.out.println("==========================================");
-        Application.welcomeScreen();
+    //Create separate file for per user
+    private static void createLockerforUser(String inpUsername) {
+        File userFile = new File("users/"+inpUsername+".txt");
+        try {
+            lockerOutput = new PrintWriter(new FileWriter(userFile, true));
+        }catch (IOException e) {
+            System.out.println("404 : File Not Found ");
+        }
     }
 
     //fetch credentials
-    public static void fetchCredentials(String inpUsername,Scanner keyboard,UserCredentials userCredentials, PrintWriter lockerOutput){
+    public static void fetchCredentials(String inpUsername,Scanner keyboard,UserCredentials userCredentials){
         System.out.println("==========================================");
         System.out.println("*										 *");
         System.out.println("*   WELCOME TO DIGITAL LOCKER 	 		 *");
@@ -55,10 +60,9 @@ public class Authentication {
         System.out.println("==========================================");
         System.out.println(inpUsername);
         try {
-            File lockerFile = new File("locker-file.txt");
+            File lockerFile = new File("users/"+inpUsername+".txt");
             Scanner lockerInput = new Scanner(lockerFile);
             while(lockerInput.hasNext()) {
-//			System.out.println(lockerInput.hasNext());
                 if(lockerInput.next().equals(inpUsername)) {
                     System.out.println("Site Name: "+lockerInput.next());
                     System.out.println("User Name: "+lockerInput.next());
@@ -68,11 +72,11 @@ public class Authentication {
         }catch (IOException e) {
             System.out.println("File Not Found !!");
         }
-        lockerOptions(inpUsername,keyboard,userCredentials,lockerOutput);
+        lockerOptions(inpUsername,keyboard,userCredentials);
     }
 
     //store credentials
-    public static void storeCredentials(String loggedInUser, Scanner keyboard,UserCredentials userCredentials, PrintWriter lockerOutput) {
+    public static void storeCredentials(String loggedInUser, Scanner keyboard,UserCredentials userCredentials) {
         System.out.println("==========================================================");
         System.out.println("*													     *");
         System.out.println("* WELCOME TO DIGITAL LOCKER STORE YOUR CREDENTIALS HERE	 *");
@@ -99,6 +103,30 @@ public class Authentication {
         lockerOutput.println(userCredentials.getPassword());
         lockerOutput.close();
         System.out.println("YOUR CREDENTIALS ARE STORED AND SECURED!");
-        lockerOptions(loggedInUser,keyboard,userCredentials,lockerOutput);
+        lockerOptions(loggedInUser,keyboard,userCredentials);
+    }
+
+    //remove credentials
+    public static void removeCredentials(String inpUsername,Scanner keyboard,UserCredentials userCredentials) {
+        File userFile = new File("users/"+inpUsername+".txt");
+        try{
+            lockerOutput = new PrintWriter(userFile);
+            lockerOutput.write("");
+            lockerOutput.close();
+            System.out.println("YOUR CREDENTIALS HAS BEEN REMOVED!");
+        }catch (IOException e){
+            System.out.println("File Not Found !!");
+        }
+
+        lockerOptions(inpUsername,keyboard,userCredentials);
+    }
+    //logout user
+    private static void logout() {
+        System.out.println("==========================================");
+        System.out.println("*										 *");
+        System.out.println("*  User Logout Successfully!	 		 *");
+        System.out.println("*										 *");
+        System.out.println("==========================================");
+        Application.welcomeScreen();
     }
 }
